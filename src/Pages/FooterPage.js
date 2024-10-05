@@ -4,7 +4,7 @@ function Footer() {
   const year = new Date().getFullYear();
   return (
     <footer>
-      <p>BAT Technology ⓒ {year}</p>
+      <p>Dbat24 ⓒ {year}</p>
     </footer>
   );
 }
