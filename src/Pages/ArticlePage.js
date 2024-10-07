@@ -24,7 +24,7 @@ const ArticlePage = () => {
       const headers = token ? { authtoken: token } : {};
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/articles/${articleId}`,
+          `${process.env.REACT_APP_API_BACKEND_URL}/api/articles/${articleId}`,
           { headers }
         );
         const newArticleInfo = response.data;
@@ -45,7 +45,7 @@ const ArticlePage = () => {
     const headers = token ? { authtoken: token } : {};
     try {
       const response = await axios.put(
-        `http://localhost:8000/api/articles/${articleId}/upvote`,
+        `${process.env.REACT_APP_API_BACKEND_URL}/api/articles/${articleId}/upvote`,
         null,
         { headers }
       );

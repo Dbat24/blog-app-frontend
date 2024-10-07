@@ -12,7 +12,7 @@ const AddCommentForm = ({ articleName, onArticleUpdated }) => {
     const headers = token ? { authtoken: token } : {};
     try {
       const response = await axios.post(
-        `http://localhost:8000/api/articles/${articleName}/comments`,
+        `${process.env.REACT_APP_API_BACKEND_URL}/api/articles/${articleName}/comments`, // Updated URL
         {
           postedBy: name,
           text: commentText,
