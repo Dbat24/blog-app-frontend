@@ -5,7 +5,6 @@ import NotFoundPage from "./NotFoundPage";
 import CommentsList from "../Components/CommentsList";
 import AddCommentForm from "../Components/AddCommentForm";
 import useUser from "../hooks/useUser";
-// import articles from "./article-content";
 
 const ArticlePage = () => {
   const [articleInfo, setArticleInfo] = useState({
@@ -54,17 +53,13 @@ const ArticlePage = () => {
     }
   };
 
-  const handleCommentUpdate = (updatedArticle) => {
-    setArticleInfo(updatedArticle);
-  };
-
-  if (!articleId) {
+  if (!articleInfo || !articleInfo.content) {
     return <NotFoundPage />;
   }
 
   return (
     <>
-      <h1>{articleInfo.title}</h1>
+      <h1>{articleId}</h1>
       <div className="upvotes-section">
         {user ? (
           <button onClick={addUpvote}>
@@ -75,17 +70,22 @@ const ArticlePage = () => {
         )}
       </div>
       <p>This article has {articleInfo.upvotes} upvote(s)</p>
-      {articleInfo.content.map((paragraph, i) => (
-        <p key={i} dangerouslySetInnerHTML={{ __html: paragraph }}></p>
-      ))}
+      {articleInfo.content ? (
+        articleInfo.content.map((paragraph, i) => (
+          <p key={i} dangerouslySetInnerHTML={{ __html: paragraph }}></p>
+        ))
+      ) : (
+        <p>No content available for this article.</p>
+      )}
       {user ? (
         <AddCommentForm
           articleName={articleId}
-          onArticleUpdated={handleCommentUpdate}
+          onArticleUpdated={(updatedArticle) => setArticleInfo(updatedArticle)}
         />
       ) : (
         <button>Log in to add a comment.</button>
       )}
+
       <CommentsList comments={articleInfo.comments} />
     </>
   );
