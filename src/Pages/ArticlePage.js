@@ -5,6 +5,7 @@ import NotFoundPage from "./NotFoundPage";
 import CommentsList from "../Components/CommentsList";
 import AddCommentForm from "../Components/AddCommentForm";
 import useUser from "../hooks/useUser";
+import articles from "./article-content";
 
 const ArticlePage = () => {
   const [articleInfo, setArticleInfo] = useState({
@@ -14,7 +15,6 @@ const ArticlePage = () => {
   });
   const { canUpvote } = articleInfo;
   const { articleId } = useParams();
-
   const { user, isLoading } = useUser();
 
   useEffect(() => {
@@ -37,6 +37,8 @@ const ArticlePage = () => {
     }
   }, [articleId, isLoading, user]);
 
+  const article = articles.find((article) => article.name === articleId);
+
   const addUpvote = async () => {
     const token = user && (await user.getIdToken());
     const headers = token ? { authtoken: token } : {};
@@ -53,13 +55,13 @@ const ArticlePage = () => {
     }
   };
 
-  if (!articleInfo || !articleInfo.content) {
+  if (!article) {
     return <NotFoundPage />;
   }
 
   return (
     <>
-      <h1>{articleId}</h1>
+      <h1>{article.title}</h1>
       <div className="upvotes-section">
         {user ? (
           <button onClick={addUpvote}>
@@ -70,13 +72,9 @@ const ArticlePage = () => {
         )}
       </div>
       <p>This article has {articleInfo.upvotes} upvote(s)</p>
-      {articleInfo.content ? (
-        articleInfo.content.map((paragraph, i) => (
-          <p key={i} dangerouslySetInnerHTML={{ __html: paragraph }}></p>
-        ))
-      ) : (
-        <p>No content available for this article.</p>
-      )}
+      {article.content.map((paragraph, i) => (
+        <p key={i} dangerouslySetInnerHTML={{ __html: paragraph }}></p>
+      ))}
       {user ? (
         <AddCommentForm
           articleName={articleId}
@@ -85,7 +83,6 @@ const ArticlePage = () => {
       ) : (
         <button>Log in to add a comment.</button>
       )}
-
       <CommentsList comments={articleInfo.comments} />
     </>
   );
