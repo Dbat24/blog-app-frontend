@@ -5,7 +5,7 @@ import NotFoundPage from "./NotFoundPage";
 import CommentsList from "../Components/CommentsList";
 import AddCommentForm from "../Components/AddCommentForm";
 import useUser from "../hooks/useUser";
-import articles from "./article-content";
+// import articles from "./article-content";
 
 const ArticlePage = () => {
   const [articleInfo, setArticleInfo] = useState({
@@ -38,8 +38,6 @@ const ArticlePage = () => {
     }
   }, [articleId, isLoading, user]);
 
-  const article = articles.find((article) => article.name === articleId);
-
   const addUpvote = async () => {
     const token = user && (await user.getIdToken());
     const headers = token ? { authtoken: token } : {};
@@ -53,17 +51,20 @@ const ArticlePage = () => {
       setArticleInfo(updatedArticle);
     } catch (error) {
       console.error("Error upvoting the article:", error);
-      // Optional: Handle upvote error, e.g., show an error message to the user
     }
   };
 
-  if (!article) {
+  const handleCommentUpdate = (updatedArticle) => {
+    setArticleInfo(updatedArticle);
+  };
+
+  if (!articleId) {
     return <NotFoundPage />;
   }
 
   return (
     <>
-      <h1>{article.title}</h1>
+      <h1>{articleInfo.title}</h1>
       <div className="upvotes-section">
         {user ? (
           <button onClick={addUpvote}>
@@ -74,18 +75,17 @@ const ArticlePage = () => {
         )}
       </div>
       <p>This article has {articleInfo.upvotes} upvote(s)</p>
-      {article.content.map((paragraph, i) => (
+      {articleInfo.content.map((paragraph, i) => (
         <p key={i} dangerouslySetInnerHTML={{ __html: paragraph }}></p>
       ))}
       {user ? (
         <AddCommentForm
           articleName={articleId}
-          onArticleUpdated={(updatedArticle) => setArticleInfo(updatedArticle)}
+          onArticleUpdated={handleCommentUpdate}
         />
       ) : (
         <button>Log in to add a comment.</button>
       )}
-
       <CommentsList comments={articleInfo.comments} />
     </>
   );
