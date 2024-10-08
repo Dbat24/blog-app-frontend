@@ -13,10 +13,10 @@ const ArticlePage = () => {
     comments: [],
     canUpvote: false,
   });
-  const { canUpvote } = articleInfo;
   const { articleId } = useParams();
   const { user, isLoading } = useUser();
 
+  // Fetch the article data
   useEffect(() => {
     const loadArticleInfo = async () => {
       const token = user && (await user.getIdToken());
@@ -29,7 +29,7 @@ const ArticlePage = () => {
         const newArticleInfo = response.data;
         setArticleInfo(newArticleInfo);
       } catch (error) {
-        console.error("Error fetching article data:", error);
+        console.error("Error fetching article data:", error.message);
       }
     };
     if (!isLoading) {
@@ -39,6 +39,7 @@ const ArticlePage = () => {
 
   const article = articles.find((article) => article.name === articleId);
 
+  // Handle the upvote logic
   const addUpvote = async () => {
     const token = user && (await user.getIdToken());
     const headers = token ? { authtoken: token } : {};
@@ -49,14 +50,14 @@ const ArticlePage = () => {
         { headers }
       );
       const updatedArticle = response.data;
-      setArticleInfo(updatedArticle);
+      setArticleInfo(updatedArticle); // Update the state with the new article info
     } catch (error) {
-      console.error("Error upvoting the article:", error);
+      console.error("Error upvoting the article:", error.message);
     }
   };
 
   if (!article) {
-    return <NotFoundPage />;
+    return <NotFoundPage />; // If article is not found
   }
 
   return (
@@ -64,8 +65,8 @@ const ArticlePage = () => {
       <h1>{article.title}</h1>
       <div className="upvotes-section">
         {user ? (
-          <button onClick={addUpvote}>
-            {canUpvote ? "Upvote" : "Already Upvoted"}
+          <button onClick={addUpvote} disabled={!articleInfo.canUpvote}>
+            {articleInfo.canUpvote ? "Upvote" : "Already Upvoted"}
           </button>
         ) : (
           <button>Log in to upvote</button>

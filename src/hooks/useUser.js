@@ -6,11 +6,17 @@ const useUser = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(getAuth(), (user) => {
+    const auth = getAuth();
+    
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setIsLoading(false);
+    }, (error) => {
+      console.error("Error with Firebase authentication:", error);
+      setIsLoading(false); // Make sure to stop loading even if there's an error
     });
-    return unsubscribe;
+
+    return () => unsubscribe(); // Cleanup on unmount
   }, []);
 
   return { user, isLoading };

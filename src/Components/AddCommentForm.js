@@ -4,9 +4,13 @@ import useUser from "../hooks/useUser";
 
 const AddCommentForm = ({ articleName, onArticleUpdated }) => {
   const [commentText, setCommentText] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false); // Loading state for submit button
   const { user } = useUser();
 
   const addComment = async () => {
+    if (!commentText.trim()) return; // Prevent submitting empty comments
+    setIsSubmitting(true); // Set loading state to true while submitting
+
     const token = user && (await user.getIdToken());
     const headers = token ? { authtoken: token } : {};
 
@@ -24,7 +28,9 @@ const AddCommentForm = ({ articleName, onArticleUpdated }) => {
       onArticleUpdated(updatedArticle); // Update the article with the new comment
       setCommentText(""); // Clear comment input after submitting
     } catch (error) {
-      console.error("Error adding comment:", error);
+      console.error("Error adding comment:", error.message);
+    } finally {
+      setIsSubmitting(false); // Reset loading state after submission
     }
   };
 
@@ -39,7 +45,12 @@ const AddCommentForm = ({ articleName, onArticleUpdated }) => {
         cols="50"
         placeholder="Write your comment here"
       />
-      <button onClick={addComment}>Add Comment</button>
+      <button 
+        onClick={addComment} 
+        disabled={isSubmitting || !commentText.trim()} // Disable when submitting or no text
+      >
+        {isSubmitting ? "Submitting..." : "Add Comment"}
+      </button>
     </div>
   );
 };
